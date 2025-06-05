@@ -1,0 +1,33 @@
+name: Build COIExtended Mod
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build COIExtended DLL
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1
+
+      - name: Restore NuGet packages
+        run: nuget restore COIExtended.csproj
+        shell: cmd
+
+      - name: Build project in Release mode
+        run: msbuild /t:Build /p:Configuration=Release /p:Platform="AnyCPU" COIExtended.csproj
+        shell: cmd
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: COIExtended-DLL
+          path: $(USERPROFILE)\AppData\Roaming\Captain of Industry\Mods\COIExtended\COIExtended.dll
